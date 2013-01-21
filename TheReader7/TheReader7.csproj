@@ -48,6 +48,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Hawaii.ClientBase">
+      <HintPath>..\..\..\..\..\Microsoft Research\Project Hawaii SDK 2.1\Source\ServiceClients\Ocr\Bin\Debug\Microsoft.Hawaii.ClientBase.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Hawaii.Ocr.Client">
+      <HintPath>..\..\..\..\..\Microsoft Research\Project Hawaii SDK 2.1\Source\ServiceClients\Ocr\Bin\Debug\Microsoft.Hawaii.Ocr.Client.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Xna.Framework" />
@@ -62,12 +68,19 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Globals.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="views\camera.xaml.cs">
       <DependentUpon>camera.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\LoadingPage.xaml.cs">
+      <DependentUpon>LoadingPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="views\OutputPage.xaml.cs">
+      <DependentUpon>OutputPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +93,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="views\camera.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\LoadingPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="views\OutputPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
