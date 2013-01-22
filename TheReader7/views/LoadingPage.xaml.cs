@@ -24,20 +24,33 @@ namespace TheReader7.views
             InitializeComponent();
             bmp = new BitmapImage();
             bmp = (BitmapImage) PhoneApplicationService.Current.State["image"];
+            //bmp = new BitmapImage(new Uri("/images/helloworld.jpg", UriKind.Relative));
             bg.ImageSource = bmp;
             statusText.Text = "loading . . .";
-
-            startOCR();     // Initiates the OCR process
+            
         }
 
         private void startOCR()
         {
+            if (bmp.PixelHeight > 640 || bmp.PixelWidth > 640)
+                resizeImage();
             //TODO: Check if the Image is of the correct size and dimension
             byte[] photoBuffer = imageToByte(bmp);
             OcrService.RecognizeImageAsync(Globals.HawaiiApplicationId, photoBuffer, (output) => { 
                 Dispatcher.BeginInvoke(() => onOCRComplete(output));
             });
             
+        }
+
+        private static byte[] StreamToByteArray(Stream stream)
+        {
+            byte[] buffer = new byte[stream.Length];
+
+            long seekPosition = stream.Seek(0, SeekOrigin.Begin);
+            int bytesRead = stream.Read(buffer, 0, buffer.Length);
+            seekPosition = stream.Seek(0, SeekOrigin.Begin);
+
+            return buffer;
         }
 
         private void onOCRComplete(OcrServiceResult result)
@@ -51,6 +64,7 @@ namespace TheReader7.views
                     wordCount += item.Words.Count;
                     sb.AppendLine(item.Text);
                 }
+                MessageBox.Show(sb.ToString());
                 PhoneApplicationService.Current.State["text"] = sb.ToString();
                 NavigationService.Navigate(new Uri("/views/OutputPage.xaml", UriKind.Relative));
                 // TODO: fix navigation
@@ -65,18 +79,53 @@ namespace TheReader7.views
         {
             using (MemoryStream ms = new MemoryStream())
             {
-                WriteableBitmap btmMap = new WriteableBitmap
-                    (img.PixelWidth, img.PixelHeight);
+                WriteableBitmap btmap = new WriteableBitmap(img);
+                btmap.SaveJpeg(ms, btmap.PixelWidth, btmap.PixelHeight, 0, 100);
+                byte[] buffer = new byte[ms.Length];
 
-                // write an image into the stream
-                Extensions.SaveJpeg(btmMap, ms,
-                    img.PixelWidth, img.PixelHeight, 0, 100);
+                long seekPosition = ms.Seek(0, SeekOrigin.Begin);
+                int bytesRead = ms.Read(buffer, 0, buffer.Length);
+                seekPosition = ms.Seek(0, SeekOrigin.Begin);
 
-                return ms.ToArray();
+                return buffer;
             }
         }
 
+        private void resizeImage() 
+        {
+            WriteableBitmap wb = new WriteableBitmap(bmp);
+            MemoryStream ms = new MemoryStream();
+            int h, w;
+            // TODO: test the below algo.
+            if (wb.PixelWidth > wb.PixelHeight)
+            {
+                double aspRatio = wb.PixelWidth /(double) wb.PixelHeight;
+                double hh, ww;
+                hh = (640.0 / aspRatio);
+                ww = hh * aspRatio;
+                h = (int)hh;
+                w = (int)ww;
+            }
+            else
+            {
+                double aspRatio = wb.PixelHeight /(double) wb.PixelWidth;
+                double hh, ww;
+                hh = (480.0 / aspRatio);
+                ww = hh * aspRatio;
+                h = (int)hh;
+                w = (int)ww;
+            }
+            wb.SaveJpeg(ms, w, h, 0, 100);
+            bmp.SetSource(ms);
+        }
+
         private void splitImages() { }
+
+        private void pageLoaded(object sender, RoutedEventArgs e)
+        {
+            startOCR();     // Initiates the OCR process
+        }
+
 
     }
 }

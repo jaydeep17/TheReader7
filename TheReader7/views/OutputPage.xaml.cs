@@ -20,6 +20,7 @@ namespace TheReader7.views
             InitializeComponent();
             txt = (string) PhoneApplicationService.Current.State["text"];
             opText.Text = txt;
+            MessageBox.Show(txt);
         }
 
         // TODO: do the IO process using the new WP8 async APIs in actual app

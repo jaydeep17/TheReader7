@@ -10,6 +10,6 @@ namespace TheReader7
         /// <summary>
         /// The Hawaii Application Id.
         /// </summary>
-        public const string HawaiiApplicationId = "13a67c2d-636b-432e-b8b8-e71eb19b52f5";
+        public const string HawaiiApplicationId = "50be8f73-9a12-457c-af36-a982afe9756c";
     }
 }

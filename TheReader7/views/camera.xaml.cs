@@ -33,11 +33,14 @@ namespace TheReader7.views
             Dispatcher.BeginInvoke(delegate()
             {
                 txtmsg.Text = "Image available";
+                BitmapImage bmp = new BitmapImage();
+                bmp.SetSource(e.ImageStream);
+                PhoneApplicationService.Current.State["image"] = bmp;
+                NavigationService.Navigate(new Uri("/views/LoadingPage.xaml", UriKind.Relative));
             });
-            BitmapImage bmp = new BitmapImage();
-            bmp.SetSource(e.ImageStream);
-            PhoneApplicationService.Current.State["image"] = bmp;
-            NavigationService.Navigate(new Uri("/views/LoadingPage.xaml", UriKind.Relative));
+            
+            
+            
             // TODO: fix onNavigatedTO and onNavigationFrom problems
         }
 
