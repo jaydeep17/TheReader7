@@ -94,9 +94,12 @@ namespace TheReader7.views
         private void resizeImage() 
         {
             WriteableBitmap wb = new WriteableBitmap(bmp);
+            // TODO: memory management 
+            // we have 2 options
+            // i) use "using" statement
+            // ii) dispose of object "ms" before the method finishes (**check bmp as ms is set as it's source )
             MemoryStream ms = new MemoryStream();
             int h, w;
-            // TODO: test the below algo.
             if (wb.PixelWidth > wb.PixelHeight)
             {
                 double aspRatio = wb.PixelWidth /(double) wb.PixelHeight;
