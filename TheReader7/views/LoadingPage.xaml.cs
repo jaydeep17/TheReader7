@@ -35,7 +35,7 @@ namespace TheReader7.views
             if (bmp.PixelHeight > 640 || bmp.PixelWidth > 640)
                 resizeImage();
             //TODO: Check if the Image is of the correct size and dimension
-            PreImageProcessing.deskew(bmp);
+            bmp = PreImageProcessing.deskew(bmp);
             byte[] photoBuffer = imageToByte();
             OcrService.RecognizeImageAsync(Globals.HawaiiApplicationId, photoBuffer, (output) => { 
                 Dispatcher.BeginInvoke(() => onOCRComplete(output));
