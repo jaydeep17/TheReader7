@@ -70,6 +70,7 @@ namespace TheReader7.views
 
         protected override void OnBackKeyPress(System.ComponentModel.CancelEventArgs e)
         {
+            // TODO: I guess this works only in WP7, **check it**
             e.Cancel = true;
             NavigationService.RemoveBackEntry();
             NavigationService.GoBack();

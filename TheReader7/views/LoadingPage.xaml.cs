@@ -18,16 +18,16 @@ namespace TheReader7.views
 {
     public partial class LoadingPage : PhoneApplicationPage
     {
-        private BitmapImage bmp;
+        private BitmapImage bmp_raw;
+        private WriteableBitmap bmp;
         public LoadingPage()
         {
             InitializeComponent();
-            bmp = new BitmapImage();
-            bmp = (BitmapImage) PhoneApplicationService.Current.State["image"];
+            bmp_raw = new BitmapImage();
+            bmp_raw = (BitmapImage) PhoneApplicationService.Current.State["image"];
             //bmp = new BitmapImage(new Uri("/images/helloworld.jpg", UriKind.Relative));
-            bg.ImageSource = bmp;
+            bg.ImageSource = bmp_raw;
             statusText.Text = "loading . . .";
-            
         }
 
         private void startOCR()
@@ -35,7 +35,8 @@ namespace TheReader7.views
             if (bmp.PixelHeight > 640 || bmp.PixelWidth > 640)
                 resizeImage();
             //TODO: Check if the Image is of the correct size and dimension
-            byte[] photoBuffer = imageToByte(bmp);
+            PreImageProcessing.deskew(bmp);
+            byte[] photoBuffer = imageToByte();
             OcrService.RecognizeImageAsync(Globals.HawaiiApplicationId, photoBuffer, (output) => { 
                 Dispatcher.BeginInvoke(() => onOCRComplete(output));
             });
@@ -75,12 +76,11 @@ namespace TheReader7.views
             }
         }
 
-        private byte[] imageToByte(BitmapImage img)
+        private byte[] imageToByte()
         {
             using (MemoryStream ms = new MemoryStream())
             {
-                WriteableBitmap btmap = new WriteableBitmap(img);
-                btmap.SaveJpeg(ms, btmap.PixelWidth, btmap.PixelHeight, 0, 100);
+                bmp.SaveJpeg(ms, bmp.PixelWidth, bmp.PixelHeight, 0, 100);
                 byte[] buffer = new byte[ms.Length];
 
                 long seekPosition = ms.Seek(0, SeekOrigin.Begin);
@@ -93,16 +93,15 @@ namespace TheReader7.views
 
         private void resizeImage() 
         {
-            WriteableBitmap wb = new WriteableBitmap(bmp);
             // TODO: memory management 
             // we have 2 options
             // i) use "using" statement
             // ii) dispose of object "ms" before the method finishes (**check bmp as ms is set as it's source )
             MemoryStream ms = new MemoryStream();
             int h, w;
-            if (wb.PixelWidth > wb.PixelHeight)
+            if (bmp.PixelWidth > bmp.PixelHeight)
             {
-                double aspRatio = wb.PixelWidth /(double) wb.PixelHeight;
+                double aspRatio = bmp.PixelWidth /(double) bmp.PixelHeight;
                 double hh, ww;
                 hh = (640.0 / aspRatio);
                 ww = hh * aspRatio;
@@ -111,14 +110,14 @@ namespace TheReader7.views
             }
             else
             {
-                double aspRatio = wb.PixelHeight /(double) wb.PixelWidth;
+                double aspRatio = bmp.PixelHeight /(double) bmp.PixelWidth;
                 double hh, ww;
                 hh = (480.0 / aspRatio);
                 ww = hh * aspRatio;
                 h = (int)hh;
                 w = (int)ww;
             }
-            wb.SaveJpeg(ms, w, h, 0, 100);
+            bmp.SaveJpeg(ms, w, h, 0, 100);
             bmp.SetSource(ms);
         }
 
@@ -126,6 +125,7 @@ namespace TheReader7.views
 
         private void pageLoaded(object sender, RoutedEventArgs e)
         {
+            bmp = new WriteableBitmap(bmp_raw);
             startOCR();     // Initiates the OCR process
         }
 
