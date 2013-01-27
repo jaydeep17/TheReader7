@@ -24,8 +24,8 @@ namespace TheReader7.views
         {
             InitializeComponent();
             bmp_raw = new BitmapImage();
-            bmp_raw = (BitmapImage) PhoneApplicationService.Current.State["image"];
-            //bmp = new BitmapImage(new Uri("/images/helloworld.jpg", UriKind.Relative));
+            //bmp_raw = (BitmapImage) PhoneApplicationService.Current.State["image"];
+            bmp_raw = new BitmapImage(new Uri("/images/c2.png", UriKind.Relative));
             bg.ImageSource = bmp_raw;
             statusText.Text = "loading . . .";
         }
@@ -36,6 +36,7 @@ namespace TheReader7.views
                 resizeImage();
             //TODO: Check if the Image is of the correct size and dimension
             bmp = PreImageProcessing.deskew(bmp);
+
             byte[] photoBuffer = imageToByte();
             OcrService.RecognizeImageAsync(Globals.HawaiiApplicationId, photoBuffer, (output) => { 
                 Dispatcher.BeginInvoke(() => onOCRComplete(output));
@@ -43,6 +44,7 @@ namespace TheReader7.views
             
         }
 
+        // The below method is of no use
         private static byte[] StreamToByteArray(Stream stream)
         {
             byte[] buffer = new byte[stream.Length];
